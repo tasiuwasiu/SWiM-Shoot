@@ -11,6 +11,10 @@ import android.graphics.drawable.shapes.OvalShape;
 import android.view.Display;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.Toast;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Rafał on 31.05.2017.
@@ -19,24 +23,27 @@ import android.view.WindowManager;
 public class BubbleView extends View
 {
     private int diameter;
+    private int circle_diameter;
     private int x;
     private int y;
+    private int width;
+    private int height;
+
     private ShapeDrawable bubble;
-    Paint p1 = new Paint();
-    Paint p2 = new Paint();
+    List<Paint> paintList = new ArrayList<Paint>();
+    List<Boolean> checkList = new ArrayList<Boolean>();
 
     Context c;
+
     public BubbleView(Context context) {
         super(context);
         c=context;
         createBubble();
     }
-    private int width;
-    private int height;
 
     private void createBubble() {
         WindowManager wm = (WindowManager)
-                c.getSystemService(Context.WINDOW_SERVICE);
+               c.getSystemService(Context.WINDOW_SERVICE);
         Display display = wm.getDefaultDisplay();
         Point size = new Point();
         display.getSize(size);
@@ -44,25 +51,29 @@ public class BubbleView extends View
         height = Resources.getSystem().getDisplayMetrics().heightPixels;
         x = width/2;
         y = height/2;
-        diameter = 100;
+        diameter = height/6;
+        circle_diameter = height/10;
         bubble = new ShapeDrawable(new OvalShape());
         bubble.setBounds(x, y, x + diameter, y + diameter);
         bubble.getPaint().setColor(0xff74AC23);
-        p1.setColor(Color.RED);
-        p2.setColor(Color.WHITE);
+
+        for(int i=0; i<4; i++) {
+            Paint p = new Paint();
+            p.setColor(Color.RED);
+            p.setStyle(Paint.Style.FILL);
+            paintList.add(p);
+            checkList.add(false);
+        }
     }
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-
-
-        p1.setStyle(Paint.Style.FILL);
-
-        canvas.drawCircle(width/2, height/3, 70, p1);
-        canvas.drawCircle(width/2, (height/3)*2, 70, p2);
+        canvas.drawCircle(width/3, height/3, circle_diameter, paintList.get(0));
+        canvas.drawCircle(width/3, (height/3)*2, circle_diameter, paintList.get(1));
+        canvas.drawCircle((width/3)*2, (height/3), circle_diameter, paintList.get(2));
+        canvas.drawCircle((width/3)*2, (height/3)*2, circle_diameter, paintList.get(3));
 
         bubble.draw(canvas);
-
     }
 
     protected void move(float f, float g) {
@@ -80,13 +91,32 @@ public class BubbleView extends View
 
     public void isIn ()
     {
-        if (x < width/2 && x> width/2-70 && y<height/3 && y>height/3-70)
-                p1.setColor(Color.GREEN);
+        if (x < width/3 && x> width/3-circle_diameter && y<height/3 && y>height/3-circle_diameter)
+            changeColor(0 ,Color.GREEN);
+
+        if (x < width/2 && x> width/3-circle_diameter && y<(height/3)*2 && y>(height/3)*2-circle_diameter)
+            changeColor(1 ,Color.GREEN);
+
+        if (x < (width/3)*2 && x> (width/3)*2-circle_diameter && y<height/3 && y>height/3-circle_diameter)
+            changeColor(2 ,Color.GREEN);
+
+        if (x < (width/3)*2 && x> (width/3)*2-circle_diameter && y<(height/3)*2 && y>(height/3)*2-circle_diameter)
+            changeColor(3 ,Color.GREEN);
+
+        isDone();
     }
 
-    public void changeColor (int color)
+    private void changeColor (int pos, int color)
     {
-        p1.setColor(color);
+        paintList.get(pos).setColor(color);
+        checkList.set(pos,true);
+    }
+
+    public boolean isDone()
+    {
+        boolean test = checkList.get(0) && checkList.get(1) && checkList.get(2) && checkList.get(3);
+
+        return test;
     }
 
 

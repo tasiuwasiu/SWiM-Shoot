@@ -2,4 +2,5 @@
     <string name="app_name">Shoot</string>
     <string name="start">Start!</string>
     <string name="title_activity_game">Gra</string>
+    <string name="no_time">No Best Time</string>
 </resources>

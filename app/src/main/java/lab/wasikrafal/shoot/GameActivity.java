@@ -1,15 +1,14 @@
 package lab.wasikrafal.shoot;
 
 import android.app.Activity;
-import android.graphics.Color;
+import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.View;
-import android.widget.Button;
-import android.widget.Toast;
 
 /**
  * Created by Rafał on 31.05.2017.
@@ -20,6 +19,10 @@ public class GameActivity extends Activity implements SensorEventListener, View.
     private SensorManager manager;
     private BubbleView bubbleView;
     private Sensor accel;
+    final Handler handler = new Handler();
+    long start;
+    long stop;
+
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         bubbleView = new BubbleView(this);
@@ -29,6 +32,7 @@ public class GameActivity extends Activity implements SensorEventListener, View.
         manager.registerListener(this, accel,
                 SensorManager.SENSOR_DELAY_GAME);
         bubbleView.setOnClickListener(this);
+        start=System.currentTimeMillis();
     }
 
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
@@ -51,5 +55,20 @@ public class GameActivity extends Activity implements SensorEventListener, View.
     public void onClick (View v)
     {
         bubbleView.isIn();
+        if (bubbleView.isDone()) {
+            stop=System.currentTimeMillis();
+
+            handler.postDelayed(new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    Intent returnIntent = new Intent();
+                    returnIntent.putExtra("result", (stop-start));
+                    setResult(Activity.RESULT_OK,returnIntent);
+                    finish();
+                }
+            }, 2000);
+        }
     }
 }
