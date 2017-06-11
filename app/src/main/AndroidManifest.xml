@@ -21,6 +21,9 @@
                   android:label="@string/title_activity_game"
                     android:theme="@android:style/Theme.Holo.NoActionBar.Fullscreen">
             </activity>
+        <activity android:name=".ScoreActivity"
+                  android:label="FINISH"
+                  />
     </application>
 
 </manifest>

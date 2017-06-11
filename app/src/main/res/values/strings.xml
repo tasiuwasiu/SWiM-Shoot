@@ -3,4 +3,11 @@
     <string name="start">Start!</string>
     <string name="title_activity_game">Gra</string>
     <string name="no_time">No Best Time</string>
+    <string name="high_score">high_score</string>
+    <string name="con">Congratulations!</string>
+    <string name="tm">Your time is: </string>
+    <string name="nr">NEW RECORD</string>
+    <string name="end">End</string>
+    <string name="bestTime">Best time: </string>
+    <string name="sec">s</string>
 </resources>

@@ -22,6 +22,8 @@ public class GameActivity extends Activity implements SensorEventListener, View.
     final Handler handler = new Handler();
     long start;
     long stop;
+    long bestTime;
+    Intent score;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -33,10 +35,12 @@ public class GameActivity extends Activity implements SensorEventListener, View.
                 SensorManager.SENSOR_DELAY_GAME);
         bubbleView.setOnClickListener(this);
         start=System.currentTimeMillis();
+
     }
 
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
     }
+
     public void onSensorChanged(SensorEvent event)
     {
         bubbleView.move(event.values[0], event.values[1]);
@@ -57,18 +61,29 @@ public class GameActivity extends Activity implements SensorEventListener, View.
         bubbleView.isIn();
         if (bubbleView.isDone()) {
             stop=System.currentTimeMillis();
+            bestTime = getIntent().getExtras().getLong("best", 0);
+            final long currentTime=stop-start;
+
+            score = new Intent(this, ScoreActivity.class);
+            Bundle extras = new Bundle();
+            extras.putLong("best", bestTime);
+            extras.putLong("curr", currentTime);
+            score.putExtras(extras);
 
             handler.postDelayed(new Runnable()
             {
                 @Override
                 public void run()
                 {
+
+                    startActivity(score);
+
                     Intent returnIntent = new Intent();
-                    returnIntent.putExtra("result", (stop-start));
+                    returnIntent.putExtra("result", currentTime);
                     setResult(Activity.RESULT_OK,returnIntent);
                     finish();
                 }
-            }, 2000);
+            }, 500);
         }
     }
 }
