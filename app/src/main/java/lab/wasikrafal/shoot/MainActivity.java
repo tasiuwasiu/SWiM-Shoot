@@ -6,6 +6,9 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -16,6 +19,7 @@ import java.util.concurrent.TimeUnit;
 public class MainActivity extends AppCompatActivity implements View.OnClickListener
 {
     long bestTime=0;
+    boolean isData = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -24,6 +28,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
         Button b = (Button) findViewById(R.id.buttonStart);
         b.setOnClickListener(this);
+        Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
+        setSupportActionBar(myToolbar);
         load();
     }
 
@@ -48,6 +54,33 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        menu.findItem(R.id.action_clear).setEnabled(isData);
+
+        return true;
+    }
+
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+        int id = item.getItemId();
+
+        if (id == R.id.action_clear)
+        {
+            clear();
+            return true;
+        }
+
+        if (id == R.id.action_exit)
+        {
+            finish();
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
     private void checkTime(long time)
     {
         if (time<bestTime || bestTime == 0)
@@ -67,10 +100,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         TextView t = (TextView) findViewById(R.id.time);
         t.setText(score);
         save(score, time);
+        invalidateOptionsMenu();
     }
 
     private void save (String score, long time)
     {
+        isData = true;
         SharedPreferences sharedPref = this.getPreferences(Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.putString(getString(R.string.high_score), score);
@@ -87,6 +122,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             bestTime = sharedPref.getLong("time", 0);
             TextView t = (TextView) findViewById(R.id.time);
             t.setText(score);
+            isData = true;
         }
+    }
+
+    private void clear ()
+    {
+        isData=false;
+        bestTime = 0;
+        TextView t = (TextView) findViewById(R.id.time);
+        t.setText(R.string.no_time);
+        SharedPreferences sharedPref = this.getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.clear();
+        editor.commit();
+        invalidateOptionsMenu();
     }
 }
