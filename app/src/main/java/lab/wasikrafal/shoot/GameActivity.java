@@ -6,6 +6,10 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.media.AudioAttributes;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
+import android.media.SoundPool;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
@@ -24,6 +28,16 @@ public class GameActivity extends Activity implements SensorEventListener, View.
     long stop;
     long bestTime;
     Intent score;
+    AudioAttributes attrs = new AudioAttributes.Builder()
+            .setUsage(AudioAttributes.USAGE_GAME)
+            .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+            .build();
+    SoundPool sp = new SoundPool.Builder()
+            .setMaxStreams(10)
+            .setAudioAttributes(attrs)
+            .build();
+    int soundIds[] = new int[2];
+    MediaPlayer mp;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,7 +49,16 @@ public class GameActivity extends Activity implements SensorEventListener, View.
                 SensorManager.SENSOR_DELAY_GAME);
         bubbleView.setOnClickListener(this);
         start=System.currentTimeMillis();
+        setVolumeControlStream(AudioManager.STREAM_MUSIC);
+        loadSound();
+        mp = MediaPlayer.create(this, R.raw.music);
+        mp.start();
+    }
 
+    private void loadSound ()
+    {
+        soundIds[0] = sp.load(this, R.raw.shoot, 1);
+        soundIds[1] = sp.load(this, R.raw.finish, 1);
     }
 
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
@@ -46,11 +69,13 @@ public class GameActivity extends Activity implements SensorEventListener, View.
         bubbleView.move(event.values[0], event.values[1]);
         bubbleView.invalidate();
     }
+
     protected void onResume() {
         super.onResume();
         manager.registerListener(this, accel,
                 SensorManager.SENSOR_DELAY_GAME);
     }
+
     protected void onPause() {
         super.onPause();
         manager.unregisterListener(this);
@@ -59,16 +84,21 @@ public class GameActivity extends Activity implements SensorEventListener, View.
     public void onClick (View v)
     {
         bubbleView.isIn();
+        sp.play(soundIds[0], 1, 1, 2, 0, 1.0f );
         if (bubbleView.isDone()) {
+            bubbleView.setOnClickListener(null);
             stop=System.currentTimeMillis();
-            bestTime = getIntent().getExtras().getLong("best", 0);
+            bestTime = getIntent().getExtras().getLong(getString(R.string.best_string), 0);
             final long currentTime=stop-start;
 
             score = new Intent(this, ScoreActivity.class);
             Bundle extras = new Bundle();
-            extras.putLong("best", bestTime);
-            extras.putLong("curr", currentTime);
+            extras.putLong(getString(R.string.best_string), bestTime);
+            extras.putLong(getString(R.string.curr_string), currentTime);
             score.putExtras(extras);
+            mp.stop();
+            mp.release();
+            sp.play(soundIds[1], 1, 1, 3, 0, 1.0f );
 
             handler.postDelayed(new Runnable()
             {
@@ -76,14 +106,14 @@ public class GameActivity extends Activity implements SensorEventListener, View.
                 public void run()
                 {
 
+                    sp.release();
                     startActivity(score);
-
                     Intent returnIntent = new Intent();
-                    returnIntent.putExtra("result", currentTime);
+                    returnIntent.putExtra(getString(R.string.res_string), currentTime);
                     setResult(Activity.RESULT_OK,returnIntent);
                     finish();
                 }
-            }, 500);
+            }, 5000);
         }
     }
 }

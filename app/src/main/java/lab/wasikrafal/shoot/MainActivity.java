@@ -12,7 +12,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
@@ -38,17 +37,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     {
         Intent i = new Intent(this, GameActivity.class);
         Bundle extras = new Bundle();
-        extras.putLong("best", bestTime);
+        extras.putLong(getString(R.string.best_string), bestTime);
         i.putExtras(extras);
         startActivityForResult(i, 1);
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data)
     {
-
         if (requestCode == 1) {
             if (resultCode == Activity.RESULT_OK) {
-                long time = data.getLongExtra("result", 0);
+                long time = data.getLongExtra(getString(R.string.res_string), 0);
                 checkTime(time);
             }
         }
@@ -109,7 +107,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         SharedPreferences sharedPref = this.getPreferences(Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.putString(getString(R.string.high_score), score);
-        editor.putLong("time", time);
+        editor.putLong(getString(R.string.time), time);
         editor.commit();
     }
 
@@ -119,7 +117,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if(sharedPref.contains(getString(R.string.high_score)))
         {
             String score = sharedPref.getString(getString(R.string.high_score),"");
-            bestTime = sharedPref.getLong("time", 0);
+            bestTime = sharedPref.getLong(getString(R.string.time), 0);
             TextView t = (TextView) findViewById(R.id.time);
             t.setText(score);
             isData = true;

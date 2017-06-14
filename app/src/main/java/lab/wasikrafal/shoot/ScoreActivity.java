@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
@@ -16,7 +15,6 @@ import java.util.concurrent.TimeUnit;
 
 public class ScoreActivity extends Activity implements View.OnClickListener
 {
-
 
     public void onCreate(Bundle savedInstanceState)
     {
@@ -30,8 +28,8 @@ public class ScoreActivity extends Activity implements View.OnClickListener
     private void setTime()
     {
         Bundle bundle = getIntent().getExtras();
-        long best = bundle.getLong("best");
-        long curr = bundle.getLong("curr");
+        long best = bundle.getLong(getString(R.string.best_string));
+        long curr = bundle.getLong(getString(R.string.curr_string));
         TextView tv_curr = (TextView) findViewById(R.id.tv_curr);
         TextView tv_best = (TextView) findViewById(R.id.tv_best);
 

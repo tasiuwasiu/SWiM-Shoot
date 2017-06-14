@@ -11,7 +11,6 @@ import android.graphics.drawable.shapes.OvalShape;
 import android.view.Display;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -14,4 +14,8 @@
     <string name="action_clear">Clear</string>
     <string name="share_string">My best time in Shoot is:</string>
     <string name="action_exit">Exit</string>
+    <string name="time">time</string>
+    <string name="best_string">best</string>
+    <string name="res_string">result</string>
+    <string name="curr_string">curr</string>
 </resources>
