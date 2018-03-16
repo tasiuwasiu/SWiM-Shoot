@@ -14,9 +14,9 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
 
-/**
- * Created by Rafał on 31.05.2017.
- */
+import java.util.Timer;
+import java.util.TimerTask;
+
 
 public class GameActivity extends Activity implements SensorEventListener, View.OnClickListener
 {
@@ -27,6 +27,9 @@ public class GameActivity extends Activity implements SensorEventListener, View.
     long start;
     long stop;
     long bestTime;
+    int lives =3;
+    Timer timer;
+
     Intent score;
     AudioAttributes attrs = new AudioAttributes.Builder()
             .setUsage(AudioAttributes.USAGE_GAME)
@@ -52,7 +55,9 @@ public class GameActivity extends Activity implements SensorEventListener, View.
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
         loadSound();
         mp = MediaPlayer.create(this, R.raw.music);
+        mp.setLooping(true);
         mp.start();
+        enemyFunction();
     }
 
     private void loadSound ()
@@ -91,6 +96,9 @@ public class GameActivity extends Activity implements SensorEventListener, View.
             bestTime = getIntent().getExtras().getLong(getString(R.string.best_string), 0);
             final long currentTime=stop-start;
 
+            timer.cancel();
+            timer.purge();
+
             score = new Intent(this, ScoreActivity.class);
             Bundle extras = new Bundle();
             extras.putLong(getString(R.string.best_string), bestTime);
@@ -116,4 +124,41 @@ public class GameActivity extends Activity implements SensorEventListener, View.
             }, 5000);
         }
     }
+
+    private void onGameOver()
+    {
+        final Intent gameover = new Intent(this, GameOverActivity.class);
+
+        mp.stop();
+            mp.release();
+                startActivity(gameover);
+                Intent returnIntent = new Intent();
+                returnIntent.putExtra(getString(R.string.res_string), Long.MAX_VALUE);
+                setResult(Activity.RESULT_OK,returnIntent);
+                timer.cancel();
+                timer.purge();
+                finish();
+    }
+
+    private void enemyFunction()
+    {
+        timer =new Timer();
+        TimerTask task = new TimerTask() {
+            @Override
+            public void run() {
+                bubbleView.moveEnemy();
+                if(bubbleView.checkHit())
+                {
+                    lives--;
+                    bubbleView.resetBubble();
+                    if (lives < 1) {
+                        onGameOver();
+                    }
+                }
+            }
+        };
+        timer.schedule(task,0,33);
+    }
+
+
 }

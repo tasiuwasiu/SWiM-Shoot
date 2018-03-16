@@ -16,14 +16,17 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name=".GameActivity"
-                  android:screenOrientation="landscape"
-                  android:label="@string/title_activity_game"
-                    android:theme="@android:style/Theme.Holo.NoActionBar.Fullscreen">
-            </activity>
-        <activity android:name=".ScoreActivity"
-                  android:label="FINISH"
-                  />
+        <activity
+            android:name=".GameActivity"
+            android:label="@string/title_activity_game"
+            android:screenOrientation="landscape"
+            android:theme="@android:style/Theme.Holo.NoActionBar.Fullscreen">
+        </activity>
+        <activity
+            android:name=".ScoreActivity"
+            android:label="FINISH"/>
+        <activity android:name=".GameOverActivity">
+        </activity>
     </application>
 
 </manifest>
